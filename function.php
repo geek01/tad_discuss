@@ -115,7 +115,7 @@ function insert_tad_discuss_board($BoardTitle = '')
     $BoardTitle = $myts->addSlashes($BoardTitle);
     $BoardDesc = $myts->addSlashes($_POST['BoardDesc']);
 
-    $BoardManager = is_array($_POST['BoardManager']) ? implode(',', $_POST['BoardManager']) : $_POST['BoardManager'];
+    $BoardManager = is_array($_POST['BoardManager']) ? implode(',', $_POST['BoardManager']) : $myts->addSlashes($_POST['BoardManager']);
     if (empty($BoardManager)) {
         $BoardManager = $xoopsUser->uid();
     }
@@ -587,17 +587,17 @@ function insert_tad_discuss($nl2br = false)
     //全局
     $extra_tags['DISCUSS_TITLE'] = $myts->htmlSpecialChars($_POST['DiscussTitle']);
     $extra_tags['DISCUSS_CONTENT'] = strip_tags($_POST['DiscussContent']);
-    $extra_tags['DISCUSS_URL'] = XOOPS_URL . "/modules/tad_discuss/discuss.php?DiscussID={$ToDiscussID}&BoardID={$_POST['BoardID']}";
+    $extra_tags['DISCUSS_URL'] = XOOPS_URL . "/modules/tad_discuss/discuss.php?DiscussID={$ToDiscussID}&BoardID={$BoardID}";
 
     $notificationHandler = xoops_getHandler('notification');
     $notificationHandler->triggerEvent('global', 0, 'new_discuss', $extra_tags, null, null, 0);
 
     //分類
-    if (!empty($_POST['BoardID'])) {
-        $Board = get_tad_discuss_board($_POST['BoardID']);
+    if (!empty($BoardID)) {
+        $Board = get_tad_discuss_board($BoardID);
         $extra_tags['BOARD_TITLE'] = $myts->htmlSpecialChars($Board['BoardTitle']);
         $notificationHandler = xoops_getHandler('notification');
-        $notificationHandler->triggerEvent('board', $_POST['BoardID'], 'new_board_discuss', $extra_tags, null, null, 0);
+        $notificationHandler->triggerEvent('board', $BoardID, 'new_board_discuss', $extra_tags, null, null, 0);
     }
 
     if (!empty($ReDiscussID)) {
